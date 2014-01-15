@@ -1,5 +1,6 @@
 #include "IOcode.h"
 #include "TOS.h"
+#include "OpCode.h"
 
 
 int main(int argc, char** argv)
@@ -19,12 +20,32 @@ int main(int argc, char** argv)
 	{
 		switch (code[ip])
 		{
-			case 1:
-				push_double(12.1);
-				ip++;
-				break;
+			case DLOAD0:
+				// DO(DLOAD0, "Load double 0 on TOS.", 1)
+				push_double(0);
+				ip++; break;
+			case ILOAD0:
+				 //DO(ILOAD0, "Load int 0 on TOS.", 1)
+				push_int(0);
+				ip++; break;
+			case DLOAD1:
+				//DO(DLOAD1, "Load double 1 on TOS.", 1)  
+				push_double(1);
+				ip++; break;
+			case ILOAD1:
+				//DO(ILOAD1, "Load int 1 on TOS.", 1)
+				push_int(1);
+				ip++; break;
+			case DLOADM1:
+				//DO(DLOADM1, "Load double -1 on TOS.", 1) 
+				push_double(-1);
+				ip++; break;
+			case ILOADM1:
+				//DO(ILOADM1, "Load int -1 on TOS.", 1)
+				push_int(-1);
+				ip++; break;
 
-			case 78:
+			case STOP:
 				exec_status = 0;				
 				break;			
 		}
