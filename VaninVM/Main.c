@@ -5,6 +5,8 @@
 
 int main(int argc, char** argv)
 {
+	double d1, d2;
+	int i1, i2;
 	char* code;	
 	int ip;
 
@@ -44,13 +46,87 @@ int main(int argc, char** argv)
 				//DO(ILOADM1, "Load int -1 on TOS.", 1)
 				push_int(-1);
 				ip++; break;
-
+			case DADD:
+				d1 = pop_double();
+				d2 = pop_double();
+				d1 += d2;
+				push_double(d1);
+				ip++; break;
+			case IADD:
+				i1 = pop_int();
+				i2 = pop_int();
+				i1 += i2;
+				push_int(i1);
+				ip++; break;
+			case DSUB:
+				d1 = pop_double();
+				d2 = pop_double();
+				d1 -= d2;
+				push_double(d1);
+				ip++; break;
+			case ISUB:
+				i1 = pop_int();
+				i2 = pop_int();
+				i1 -= i2;
+				push_int(i1);
+				ip++; break;
+			case DMUL:
+				d1 = pop_double();
+				d2 = pop_double();
+				d1 *= d2;
+				push_double(d1);
+				ip++; break;
+			case IMUL:
+				i1 = pop_int();
+				i2 = pop_int();
+				i1 *= i2;
+				push_int(i1);
+				ip++; break;
+			case DDIV:
+				d1 = pop_double();
+				d2 = pop_double();
+				d1 /= d2;
+				push_double(d1);
+				ip++; break;
+			case IDIV:
+				i1 = pop_int();
+				i2 = pop_int();
+				i1 /= i2;
+				push_int(i1);
+				ip++; break;
+			case IMOD:
+				i1 = pop_int();
+				i2 = pop_int();
+				i1 %= i2;
+				push_int(i1);
+				ip++; break;
+			case DNEG:
+				d1 = pop_double();
+				d1 = -d1;
+				push_double(d1);
+				ip++; break;
+			case INEG:
+				i1 = pop_int();
+				i1 = - i1;
+				push_int(i1);
+				ip++; break;
+			case IAOR:
+				i1 = pop_int();
+				i2 = pop_int();
+				i1 = i1 | i2;
+				push_int(i1);
+				ip++;break;
+			case DPRINT:
+				printf("%f", pop_double());
+				ip++; break;
+			case IPRINT:
+				printf("%d", pop_int());
+				ip++; break;
 			case STOP:
 				exec_status = 0;				
 				break;			
 		}
 	}
-	printf("%f", pop_double());
 	getchar();
 	return 0;
 	

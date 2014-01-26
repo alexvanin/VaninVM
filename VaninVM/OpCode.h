@@ -8,6 +8,22 @@ enum opcode
 	ILOAD1,
 	DLOADM1,
 	ILOADM1,
+	DADD,
+	IADD,
+	DSUB,
+	ISUB,
+	DMUL,
+	IMUL,
+	DDIV,
+	IDIV,
+	IMOD,
+	DNEG,
+	INEG,
+	IAOR,
+	IAAND,
+	IAXOR,
+	IPRINT,
+	DPRINT,
 	STOP
 };
 #endif
