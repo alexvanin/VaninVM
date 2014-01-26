@@ -6,7 +6,7 @@
 int main(int argc, char** argv)
 {
 	double d1, d2;
-	int i1, i2;
+	long long i1, i2;
 	char* code;	
 	int ip;
 
@@ -22,6 +22,19 @@ int main(int argc, char** argv)
 	{
 		switch (code[ip])
 		{
+			case INVALID:
+				//DO(INVALID, "Invalid instruction.", 1)
+				ip++; break;
+			case DLOAD:
+				//DO(DLOAD, "Load double on TOS, inlined into insn stream.", 9)
+				d1 = *((double*)(code+(++ip)));
+				push_double(d1);
+				ip+=8; break;
+			case ILOAD:
+				//DO(ILOAD, "Load int on TOS, inlined into insn stream.", 9)
+				i1 = *((long long*)(code+(++ip)));
+				push_int(i1);
+				ip++; break;
 			case DLOAD0:
 				// DO(DLOAD0, "Load double 0 on TOS.", 1)
 				push_double(0);
@@ -144,6 +157,29 @@ int main(int argc, char** argv)
 				d1 = pop_double();
 				push_double(d1);
 				printf("%f", d1);
+				ip++; break;
+			case I2D:
+				//DO(I2D,  "Convert int on TOS to double.", 1)
+				i1 = pop_int();
+				d1 = (double)i1;
+				push_double(d1);
+				ip++; break;
+			case D2I:
+				//DO(D2I,  "Convert double on TOS to int.", 1)
+				d1 = pop_double();
+				i1 = (int)d1;
+				push_int(i1);
+				ip++; break;
+			case SWAP:
+				//DO(SWAP, "Swap 2 topmost values.", 1)
+				i1 = pop_int();
+				i2 = pop_int();
+				push_int(i1);
+				push_int(i2);
+				ip++; break;
+			case POP:
+				//DO(POP, "Remove topmost value.", 1)
+				TOS--;
 				ip++; break;
 			case STOP:
 				//DO(STOP, "Stop execution.", 1)

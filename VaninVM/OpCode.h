@@ -2,6 +2,9 @@
 #define OPCODE_H
 enum opcode
 {
+	INVALID,
+	DLOAD,
+	ILOAD,
 	DLOAD0,
 	ILOAD0,
 	DLOAD1,
@@ -24,6 +27,10 @@ enum opcode
 	IAXOR,
 	IPRINT,
 	DPRINT,
+	I2D,
+	D2I,
+	SWAP,
+	POP,
 	STOP
 };
 #endif

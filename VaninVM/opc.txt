@@ -1,7 +1,7 @@
 #define FOR_BYTECODES(DO)                                               \
-        DO(INVALID, "Invalid instruction.", 1)                          \
-        DO(DLOAD, "Load double on TOS, inlined into insn stream.", 9)   \
-        DO(ILOAD, "Load int on TOS, inlined into insn stream.", 9)      \
+        -DO(INVALID, "Invalid instruction.", 1)                          \
+        +DO(DLOAD, "Load double on TOS, inlined into insn stream.", 9)   \
+        +DO(ILOAD, "Load int on TOS, inlined into insn stream.", 9)      \
         DO(SLOAD, "Load string reference on TOS, next two bytes - constant id.", 3)   \
         +DO(DLOAD0, "Load double 0 on TOS.", 1)                          \
         +DO(ILOAD0, "Load int 0 on TOS.", 1)                             \
@@ -22,16 +22,16 @@
         +DO(DNEG, "Negate double on TOS.", 1)                            \
         +DO(INEG, "Negate int on TOS.", 1)                               \
         +DO(IAOR, "Arithmetic OR of 2 ints on TOS, push value back.", 1) \
-        DO(IAAND, "Arithmetic AND of 2 ints on TOS, push value back.", 1)  \
-        DO(IAXOR, "Arithmetic XOR of 2 ints on TOS, push value back.", 1)  \
+        +DO(IAAND, "Arithmetic AND of 2 ints on TOS, push value back.", 1)  \
+        +DO(IAXOR, "Arithmetic XOR of 2 ints on TOS, push value back.", 1)  \
         +DO(IPRINT, "Pop and print integer TOS.", 1)                     \
         +DO(DPRINT, "Pop and print double TOS.", 1)                      \
         DO(SPRINT, "Pop and print string TOS.", 1)                      \
-        DO(I2D,  "Convert int on TOS to double.", 1)                    \
-        DO(D2I,  "Convert double on TOS to int.", 1)                    \
+        +DO(I2D,  "Convert int on TOS to double.", 1)                    \
+        +DO(D2I,  "Convert double on TOS to int.", 1)                    \
         DO(S2I,  "Convert string on TOS to int.", 1)                    \
-        DO(SWAP, "Swap 2 topmost values.", 1)                           \
-        DO(POP, "Remove topmost value.", 1)                             \
+        +DO(SWAP, "Swap 2 topmost values.", 1)                           \
+        +DO(POP, "Remove topmost value.", 1)                             \
         DO(LOADDVAR0, "Load double from variable 0, push on TOS.", 1)   \
         DO(LOADDVAR1, "Load double from variable 1, push on TOS.", 1)   \
         DO(LOADDVAR2, "Load double from variable 2, push on TOS.", 1)   \
@@ -68,7 +68,7 @@
         DO(STORECTXDVAR, "Pop TOS and store to double variable, whose 2-byte context and 2-byte id is inlined to insn stream.", 5) \
         DO(STORECTXIVAR, "Pop TOS and store to int variable, whose 2-byte context and 2-byte id is inlined to insn stream.", 5) \
         DO(STORECTXSVAR, "Pop TOS and store to string variable, whose 2-byte context and 2-byte id is inlined to insn stream.", 5) \
-        DO(DCMP, "Compare 2 topmost doubles, pushing libc-stryle comparator value cmp(upper, lower) as integer.", 1) \
+        DO(DCMP, "Compare 2 topmost doubles, pushing libc-style comparator value cmp(upper, lower) as integer.", 1) \
         DO(ICMP, "Compare 2 topmost ints, pushing libc-style comparator value cmp(upper, lower) as integer.", 1) \
         DO(JA, "Jump always, next two bytes - signed offset of jump destination.", 3) \
         DO(IFICMPNE, "Compare two topmost integers and jump if upper != lower, next two bytes - signed offset of jump destination.", 3) \

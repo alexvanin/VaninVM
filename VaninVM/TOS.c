@@ -1,18 +1,18 @@
 #include <malloc.h>
 #include "TOS.h"
 
-void push_int(int num)
+void push_int(long long num)
 {
 	tos_num number;
-	number.num_i[1] = num;
+	number.num_i = num;
 	TOS[tp++] = number.num_d;
 }
 
-int pop_int()
+long long pop_int()
 {
 	tos_num number;
 	number.num_d =  TOS[--tp];
-	return number.num_i[1];
+	return number.num_i;
 }
 
 void push_double(double num)
