@@ -7,7 +7,7 @@ typedef union
 	int num_i[2];
 } tos_num;
 
-int* TOS;
+double* TOS;
 int tp;
 int initTOS();
 void push_int(int);
