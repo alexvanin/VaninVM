@@ -1,19 +1,39 @@
 #include "IOcode.h"
 #include "TOS.h"
 #include "OpCode.h"
+#include "CodeHeader.h"
+
 
 
 int main(int argc, char** argv)
 {
+	//ByteCode Variables
+	FILE* input;
+
+	//ExecutionProcess Variables
 	double d1, d2;
 	long long i1, i2;
+	short s1;
 	char* code;	
 	int ip;
 
+	//ConstSection Variables
+	int const_count;
+	char** const_index;
 
+	//Execution Variable
 	int exec_status = 1;
 
-	code = read_bytecode("bytecode");
+	fopen_s(&input, "bytecode", "rb");
+
+	//const_pull
+	read_constant(input, &const_count, &const_index);
+	
+	code=read_bytecode(input);
+
+	fclose(input);
+	
+
 	initTOS();
 
 	ip = 0;
@@ -34,6 +54,10 @@ int main(int argc, char** argv)
 				//DO(ILOAD, "Load int on TOS, inlined into insn stream.", 9)
 				i1 = *((long long*)(code+(++ip)));
 				push_int(i1);
+				ip++; break;
+			case SLOAD:
+				s1 = *((short*)(code+(++ip)));
+				push_int((long long)(const_index[s1]));
 				ip++; break;
 			case DLOAD0:
 				// DO(DLOAD0, "Load double 0 on TOS.", 1)
@@ -158,6 +182,11 @@ int main(int argc, char** argv)
 				push_double(d1);
 				printf("%f", d1);
 				ip++; break;
+			case SPRINT:
+				i1 = pop_int();
+				push_int(i1);
+				printf("%s", (char*)i1);
+				ip++; break;
 			case I2D:
 				//DO(I2D,  "Convert int on TOS to double.", 1)
 				i1 = pop_int();
@@ -187,5 +216,6 @@ int main(int argc, char** argv)
 				break;			
 		}
 	}
+	getchar();
 	return 0;
 }
