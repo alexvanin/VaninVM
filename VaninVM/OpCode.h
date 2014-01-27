@@ -33,6 +33,8 @@ enum opcode
 	D2I,
 	SWAP,
 	POP,
-	STOP
+	STOP,
+	CALL,
+	RETURN
 };
 #endif

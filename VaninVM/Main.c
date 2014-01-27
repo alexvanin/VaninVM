@@ -2,6 +2,8 @@
 #include "TOS.h"
 #include "OpCode.h"
 #include "CodeHeader.h"
+#include "Context.h"
+#include "ReturnStack.h"
 
 
 
@@ -15,28 +17,32 @@ int main(int argc, char** argv)
 	long long i1, i2;
 	short s1;
 	char* code;	
-	int ip;
+	int ip, startfunc;
 
 	//ConstSection Variables
 	int const_count;
 	char** const_index;
 
-	//Execution Variable
+	//CodeSection Variables
+	func** phash_table;
+	context* current_context;
+
+	//Running Variable
 	int exec_status = 1;
 
 	fopen_s(&input, "bytecode", "rb");
-
 	//const_pull
 	read_constant(input, &const_count, &const_index);
-	
-	code=read_bytecode(input);
-
+	//code_pull
+	startfunc = read_bytecode(input, &phash_table);
 	fclose(input);
 	
 
 	initTOS();
-
+	initRStack();
 	ip = 0;
+
+	current_context = create_context(startfunc, phash_table, &code);
 
 	while (exec_status)
 	{
@@ -54,11 +60,11 @@ int main(int argc, char** argv)
 				//DO(ILOAD, "Load int on TOS, inlined into insn stream.", 9)
 				i1 = *((long long*)(code+(++ip)));
 				push_int(i1);
-				ip++; break;
+				ip+=8; break;
 			case SLOAD:
 				s1 = *((short*)(code+(++ip)));
 				push_int((long long)(const_index[s1]));
-				ip++; break;
+				ip+=2; break;
 			case DLOAD0:
 				// DO(DLOAD0, "Load double 0 on TOS.", 1)
 				push_double(0);
@@ -173,18 +179,16 @@ int main(int argc, char** argv)
 			case IPRINT:
 				//DO(IPRINT, "Pop and print integer TOS.", 1)
 				i1 = pop_int();
-				push_int(i1);
 				printf("%d", i1);
 				ip++; break;
 			case DPRINT:
 				//DO(DPRINT, "Pop and print double TOS.", 1)
 				d1 = pop_double();
-				push_double(d1);
 				printf("%f", d1);
 				ip++; break;
 			case SPRINT:
+				//DO(SPRINT, "Pop and print string TOS.", 1)
 				i1 = pop_int();
-				push_int(i1);
 				printf("%s", (char*)i1);
 				ip++; break;
 			case I2D:
@@ -213,9 +217,22 @@ int main(int argc, char** argv)
 			case STOP:
 				//DO(STOP, "Stop execution.", 1)
 				exec_status = 0;				
-				break;			
+				break;
+			case CALL:
+				s1 = *((short*)(code+(++ip)));
+				ip+=2; push_ret(ip);
+				push_context(current_context);
+				current_context = create_context(s1, phash_table, &code);
+				ip = 0; break;
+			case RETURN:
+				remove_context(current_context);
+				current_context = pop_context();
+				code = phash_table[current_context->id]->code;
+				ip = pop_ret();	break;
+
 		}
 	}
+	remove_context(current_context);
 	getchar();
 	return 0;
 }
