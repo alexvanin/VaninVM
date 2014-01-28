@@ -11,8 +11,21 @@
 
 long long cmp_int(long long* a, long long* b);
 double cmp_double(double* a, double* b);
+void run_intepreter(char* filename);
 
 int main(int argc, char** argv)
+{
+	int return_code;
+	if (argc<2)
+	{
+		printf("%s", "File is not specified");
+		return 1;
+	}
+	return_code = run_interpreter(argv[1]);
+
+}
+
+int run_interpreter(char* filename)
 {
 	//ByteCode Variables
 	FILE* input;
@@ -35,14 +48,7 @@ int main(int argc, char** argv)
 	//Running Variable
 	int exec_status = 1;
 
-
-	if (argc<2)
-	{
-		printf("%s", "File is not specified");
-		return 1;
-	}
-
-	fopen_s(&input, argv[1], "rb");
+	fopen_s(&input, filename, "rb");
 	//const_pull
 	if (read_constant(input, &const_count, &const_index) != 0)
 		return 1;
