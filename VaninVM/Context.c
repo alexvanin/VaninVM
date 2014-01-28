@@ -31,3 +31,21 @@ context* pop_context()
 	node_last = node_last->prev;
 	return last->obj;
 }
+
+//Find Context in Context Stack.
+context* find_context(int id) 
+{
+	context* result = NULL;
+	c_node* current = node_last;
+	while (current != NULL || current->prev != NULL)
+	{
+		if (current->obj->id == id)
+		{
+			result = current->obj;
+			break;
+		}
+		else
+			current = current->prev;
+	}
+	return result;
+}

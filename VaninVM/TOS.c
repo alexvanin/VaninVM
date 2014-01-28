@@ -15,6 +15,13 @@ long long pop_int()
 	return number.num_i;
 }
 
+long long get_int(int id)
+{
+	tos_num number;
+	number.num_d =  TOS[id];
+	return number.num_i;
+}
+
 void push_double(double num)
 {
 	TOS[tp++] = num;

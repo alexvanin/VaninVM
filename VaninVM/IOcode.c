@@ -2,6 +2,8 @@
 #include "CodeHeader.h"
 #include <string.h>
 
+int version = 0100;
+
 int read_bytecode(FILE* stream, func*** hash)
 {
 	int i;
@@ -39,21 +41,33 @@ int read_constant(FILE* stream, int* count, char*** index)
 	int i, j;
 	char* buffer;
 
-	fread_s(&First_Header, sizeof(First_Header), sizeof(First_Header), 1, stream); //Reading first part of header
-	*(count) = First_Header.count_const;
+	fread_s(&Const_Header, sizeof(Const_Header), sizeof(Const_Header), 1, stream); //Reading first part of header
+	if (Const_Header.signature[0]==Const_Header.signature[1]== 0xBA)
+	{
+		printf("%s", "Wrong file-format");
+		return 1;
+	}
 
-	buffer = (char*)malloc(First_Header.size_const+1);
+	if (Const_Header.version != version)
+	{
+		printf("%s", "Unsupported bytecode format");
+		return 1;
+	}
+
+	*(count) = Const_Header.count_const;
+
+	buffer = (char*)malloc(Const_Header.size_const+1);
 	buffer[0]=0;
-	*(index) = (char**)malloc(sizeof(char**)*First_Header.count_const);
+	*(index) = (char**)malloc(sizeof(char**)*Const_Header.count_const);
 
 
-	fread_s(buffer+1, First_Header.size_const, sizeof(char), First_Header.size_const, stream); //Reading constant values
+	fread_s(buffer+1, Const_Header.size_const, sizeof(char), Const_Header.size_const, stream); //Reading constant values
 
 	j=0;
 	(*(index))[j++]=buffer;
-	for (i = 0; i<First_Header.size_const+1; i++)
+	for (i = 0; i<Const_Header.size_const+1; i++)
 	{
-		if (j==First_Header.count_const)
+		if (j>Const_Header.count_const)
 			break;
 
 		if (buffer[i] == 0)

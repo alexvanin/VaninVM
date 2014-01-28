@@ -13,6 +13,7 @@ int initTOS();
 void push_int(long long);
 void push_double(double);
 long long pop_int();
+long long get_int(int);
 double pop_double();
 
 #endif

@@ -23,5 +23,6 @@ context* create_context(int function, func** hash,char** code);
 void push_context(context*);
 context* pop_context();
 void remove_context(context*);
+context* find_context(int id);
 
 #endif

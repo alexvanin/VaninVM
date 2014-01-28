@@ -3,11 +3,11 @@
 #pragma pack(push, 1)
 struct 
 {
-	char signature[4];
+	char signature[2];
 	int version;
 	int count_const;
 	int size_const;
-}First_Header;
+}Const_Header;
 
 struct
 {
