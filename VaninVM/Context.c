@@ -6,7 +6,7 @@ context* create_context(int function, func** hash, char** code)
 	cont = (context*)malloc(sizeof(context));
 
 	cont->id = function;
-	cont->locals=malloc(8*hash[function]->count_locals);
+	cont->locals=(l_var*)malloc(sizeof(l_var)*hash[function]->count_locals);
 	*(code)=hash[function]->code;
 	return cont;
 }

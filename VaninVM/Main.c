@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	double d1, d2;
 	long long i1, i2;
 	short s1, s2;
-	char* code;	
+	char *code;	
 	int ip, startfunc;
 
 	//ConstSection Variables
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 
 	initTOS();
-	initRStack();
+	initRStack(1000);
 	ip = 0;
 
 	current_context = create_context(startfunc, phash_table, &code);
@@ -596,7 +596,7 @@ int main(int argc, char** argv)
 		}
 	}
 	remove_context(current_context);
-
+	getchar();
 	return 0;
 }
 

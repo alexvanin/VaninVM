@@ -4,11 +4,17 @@
 #include "CodeHeader.h"
 #include <stdio.h>
 
+typedef union 
+{
+	double d_data;
+	long long i_data;
+	char* s_data;
+} l_var;
 
 typedef struct
 {
 	int id;
-	void* locals;
+	l_var* locals;
 } context;
 
 typedef struct NODE

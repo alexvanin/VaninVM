@@ -3,7 +3,7 @@
 
 int* RStack;
 int rp;
-int initRStack();
+int initRStack(int);
 void push_ret(int);
 int pop_ret();
 #endif

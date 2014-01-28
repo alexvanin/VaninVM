@@ -12,9 +12,9 @@ int pop_ret()
 	return num;
 }
 
-int initRStack()
+int initRStack(int size)
 {
-	RStack = (int*)calloc(1, 1000);
+	RStack = (int*)calloc(1, size);
 	rp = 0;
 	return 0;
 }

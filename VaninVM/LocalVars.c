@@ -4,35 +4,36 @@
 long long getlocal_int(context* cont, int id)
 {
 	long long result;
-	result = ((long long*)(cont->locals))[id];
+	result = (cont->locals)[id].i_data;
 	return result;
 }
 
 double getlocal_double(context* cont, int id)
 {
 	double result;
-	result = ((double*)(cont->locals))[id];
+	result = (cont->locals)[id].d_data;
 	return result;
 }
 
-int getlocal_string(context* cont, int id)
+char* getlocal_string(context* cont, int id)
 {
-	long long result;
-	result = ((long long*)(cont->locals))[id];
-	return (int)result;
+	char* result;
+	result = (cont->locals)[id].s_data;
+	return result;
 }
 
 void putlocal_int(long long* num, context* cont, int id)
 {
-	memcpy(((long long*)cont->locals)+id, num, sizeof(long long));
+	//memcpy(((long long*)cont->locals)+id, num, sizeof(long long));
+	memcpy((cont->locals)+id, num, sizeof (long long));
 }
 
 void putlocal_double(double* num, context* cont, int id)
 {
-	memcpy(((double*)cont->locals)+id, num, sizeof(double));
+	memcpy((cont->locals)+id, num, sizeof(double));
 }
 
-void putlocal_string(int* str, context* cont, int id)
+void putlocal_string(char* str, context* cont, int id)
 {
-	memcpy(((long long*)cont->locals)+id, (long long*)str, sizeof(long long));
+	memcpy((cont->locals)+id, str, sizeof(int*));
 }
