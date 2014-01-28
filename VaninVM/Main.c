@@ -582,6 +582,7 @@ int main(int argc, char** argv)
 			ip+=2; push_ret(ip);
 			push_context(current_context);
 			current_context = create_context(s1, phash_table, &code);
+			args_to_local(current_context, phash_table);
 			ip = 0; break;
 		case RETURN:
 			//DO(RETURN, "Return to call location", 1)

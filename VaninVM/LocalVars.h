@@ -9,4 +9,6 @@ char* getlocal_string(context*, int);
 void putlocal_int(long long*, context*, int);
 void putlocal_double(double*, context*, int);
 void putlocal_string(char*, context*, int);
+
+void args_to_local(context*, func**);
 #endif

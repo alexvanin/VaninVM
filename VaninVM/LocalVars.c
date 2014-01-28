@@ -1,5 +1,6 @@
 #include <string.h>
 #include "LocalVars.h"
+#include "TOS.h"
 
 long long getlocal_int(context* cont, int id)
 {
@@ -24,16 +25,26 @@ char* getlocal_string(context* cont, int id)
 
 void putlocal_int(long long* num, context* cont, int id)
 {
-	//memcpy(((long long*)cont->locals)+id, num, sizeof(long long));
-	memcpy((cont->locals)+id, num, sizeof (long long));
+	memmove((cont->locals)+id, num, sizeof (long long));
 }
 
 void putlocal_double(double* num, context* cont, int id)
 {
-	memcpy((cont->locals)+id, num, sizeof(double));
+	memmove((cont->locals)+id, num, sizeof(double));
 }
 
 void putlocal_string(char* str, context* cont, int id)
 {
-	memcpy((cont->locals)+id, str, sizeof(int*));
+	memmove((cont->locals)+id, str, sizeof(int*));
+}
+
+void args_to_local(context* cont, func** hash)
+{
+	int i;
+	long long tmp;
+	for (i=(hash[cont->id]->count_args)-1; i>=0; i--)
+	{
+		tmp = pop_int();
+		memmove(&((cont->locals)[i]), &tmp, sizeof(long long));
+	}
 }
