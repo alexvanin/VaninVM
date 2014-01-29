@@ -11,7 +11,7 @@ struct
 
 struct
 {
-	short id_start;
+	unsigned short id_start;
 	int count_code;
 }ByteCodeH_Common;
 
@@ -24,7 +24,7 @@ struct
 
 struct
 {
-	short id;
+	unsigned short id;
 	int count_locals;
 	int count_args;
 }ByteCodeH_Primary;

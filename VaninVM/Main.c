@@ -34,7 +34,8 @@ int run_interpreter(char* filename)
 	//ExecutionProcess Variables
 	double d1, d2;
 	long long i1, i2;
-	short s1, s2;
+	unsigned short s1;
+	short s2;
 	char *code;	
 	int ip, startfunc;
 
@@ -374,31 +375,31 @@ int run_interpreter(char* filename)
 			break;
 		case LOADDVAR:
 			//DO(LOADDVAR, "Load double from variable, whose 2-byte is id inlined to insn stream, push on TOS.", 3)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			d1 = getlocal_double(current_context, s1);
 			push_double(d1);
 			ip+=2; break;
 		case LOADIVAR:
 			//DO(LOADIVAR, "Load int from variable, whose 2-byte id is inlined to insn stream, push on TOS.", 3)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			i1 = getlocal_int(current_context, s1);
 			push_int(i1);
 			ip+=2; break;
 		case LOADSVAR:
 			//DO(LOADSVAR, "Load string from variable, whose 2-byte id is inlined to insn stream, push on TOS.", 3)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			i1 = (long long)getlocal_string(current_context, s1);
 			push_int(i1);
 			ip+=2; break;
 		case STOREDVAR:
 			//DO(STOREDVAR, "Pop TOS and store to double variable, whose 2-byte id is inlined to insn stream.", 3)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			d1 = pop_double();
 			putlocal_double(&d1, current_context, s1);
 			ip+=2; break;
 		case STOREIVAR:
 			//DO(STOREIVAR, "Pop TOS and store to int variable, whose 2-byte id is inlined to insn stream.", 3)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			i1 = pop_int();
 			putlocal_int(&i1, current_context, s1);
 			ip+=2; break;
@@ -410,7 +411,7 @@ int run_interpreter(char* filename)
 			ip+=2; break;
 		case LOADCTXDVAR:
 			//DO(LOADCTXDVAR, "Load double from variable, whose 2-byte context and 2-byte id inlined to insn stream, push on TOS.", 5)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			ip+=2;
 			s2 = *((short*)(code+ip));
 			if (find_context(s1) != NULL)
@@ -426,7 +427,7 @@ int run_interpreter(char* filename)
 			ip+=2; break;
 		case LOADCTXIVAR:
 			//DO(LOADCTXIVAR, "Load int from variable, whose 2-byte context and 2-byte id is inlined to insn stream, push on TOS.", 5)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			ip+=2;
 			s2 = *((short*)(code+ip));
 			if (find_context(s1) != NULL)
@@ -442,7 +443,7 @@ int run_interpreter(char* filename)
 			ip+=2; break;
 		case LOADCTXSVAR:
 			//DO(LOADCTXSVAR, "Load string from variable, whose 2-byte context and 2-byte id is inlined to insn stream, push on TOS.", 5)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			ip+=2;
 			s2 = *((short*)(code+ip));
 			if (find_context(s1) != NULL)
@@ -458,7 +459,7 @@ int run_interpreter(char* filename)
 			ip+=2; break;
 		case STORECTXDVAR:
 			//DO(STORECTXDVAR, "Pop TOS and store to double variable, whose 2-byte context and 2-byte id is inlined to insn stream.", 5)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			ip+=2;
 			s2 = *((short*)(code+ip));
 			d1 = pop_double();
@@ -474,7 +475,7 @@ int run_interpreter(char* filename)
 			ip+=2; break;
 		case STORECTXIVAR:
 			//DO(STORECTXIVAR, "Pop TOS and store to int variable, whose 2-byte context and 2-byte id is inlined to insn stream.", 5) 
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			ip+=2;
 			s2 = *((short*)(code+ip));
 			i1 = pop_int();
@@ -490,7 +491,7 @@ int run_interpreter(char* filename)
 			ip+=2; break;
 		case STORECTXSVAR:
 			//DO(STORECTXSVAR, "Pop TOS and store to string variable, whose 2-byte context and 2-byte id is inlined to insn stream.", 5)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			ip+=2;
 			s2 = *((short*)(code+ip));
 			i1 = pop_int();
@@ -518,61 +519,61 @@ int run_interpreter(char* filename)
 			break;
 		case JA:
 			//DO(JA, "Jump always, next two bytes - signed offset of jump destination.", 3)
-			s1 = *((short*)(code+ip));
-			ip += (2+s1); break;
+			s2 = *((short*)(code+ip));
+			ip += (2+s2); break;
 		case IFICMPNE:
 			// DO(IFICMPNE, "Compare two topmost integers and jump if upper != lower, next two bytes - signed offset of jump destination.", 3)
-			s1 = *((short*)(code+ip));
+			s2 = *((short*)(code+ip));
 			ip+=2;
 			i1 = get_int(tp-1);
 			i2 = get_int(tp-2);
 			if (i1 != i2)
-				ip += s1;
+				ip += s2;
 			break;
 		case IFICMPE:
 			//DO(IFICMPE, "Compare two topmost integers and jump if upper == lower, next two bytes - signed offset of jump destination.", 3)
-			s1 = *((short*)(code+ip));
+			s2 = *((short*)(code+ip));
 			ip+=2;
 			i1 = get_int(tp-1);
 			i2 = get_int(tp-2);
 			if (i1 == i2)
-				ip += s1;
+				ip += s2;
 			break;
 		case IFICMPG:
 			//DO(IFICMPG, "Compare two topmost integers and jump if upper > lower, next two bytes - signed offset of jump destination.", 3)
-			s1 = *((short*)(code+ip));
+			s2 = *((short*)(code+ip));
 			ip+=2;
 			i1 = get_int(tp-1);
 			i2 = get_int(tp-2);
 			if (i1 > i2)
-				ip += s1;
+				ip += s2;
 			break;
 		case IFICMPGE:
 			//DO(IFICMPGE, "Compare two topmost integers and jump if upper >= lower, next two bytes - signed offset of jump destination.", 3)
-			s1 = *((short*)(code+ip));
+			s2 = *((short*)(code+ip));
 			ip+=2;
 			i1 = get_int(tp-1);
 			i2 = get_int(tp-2);
 			if (i1 >= i2)
-				ip += s1;
+				ip += s2;
 			break;
 		case IFICMPL:
 			//DO(IFICMPL, "Compare two topmost integers and jump if upper < lower, next two bytes - signed offset of jump destination.", 3)
-			s1 = *((short*)(code+ip));
+			s2 = *((short*)(code+ip));
 			ip+=2;
 			i1 = get_int(tp-1);
 			i2 = get_int(tp-2);
 			if (i1 < i2)
-				ip += s1;
+				ip += s2;
 			break;
 		case IFICMPLE:
 			//DO(IFICMPLE, "Compare two topmost integers and jump if upper <= lower, next two bytes - signed offset of jump destination.", 3)
-			s1 = *((short*)(code+ip));
+			s2 = *((short*)(code+ip));
 			ip+=2;
 			i1 = get_int(tp-1);
 			i2 = get_int(tp-2);
 			if (i1 <= i2)
-				ip += s1;
+				ip += s2;
 			break;
 		case DUMP:
 			//DO(DUMP, "Dump value on TOS, without removing it.", 1) 
@@ -586,7 +587,7 @@ int run_interpreter(char* filename)
 			break;
 		case CALL:
 			//DO(CALL, "Call function, next two bytes - unsigned function id.", 3)
-			s1 = *((short*)(code+ip));
+			s1 = *((unsigned short*)(code+ip));
 			ip+=2; push_ret(ip);
 			push_context(current_context);
 			current_context = create_context(s1, phash_table, &code);
