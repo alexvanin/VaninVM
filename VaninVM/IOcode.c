@@ -58,7 +58,7 @@ int read_constant(FILE* stream, int* count, char*** index)
 
 	buffer = (char*)malloc(Const_Header.size_const+1);
 	buffer[0]=0;
-	*(index) = (char**)malloc(sizeof(char**)*Const_Header.count_const);
+	*(index) = (char**)malloc(sizeof(char**)*Const_Header.count_const+1);
 
 
 	fread_s(buffer+1, Const_Header.size_const, sizeof(char), Const_Header.size_const, stream); //Reading constant values

@@ -33,9 +33,9 @@ double pop_double()
 	return num;
 }
 
-int initTOS()
+int initTOS(int count)
 {
-	TOS = (double*)calloc(1, 12000);
+	TOS = (double*)calloc(count, sizeof(double*));
 	tp = 0;
 	return 0;
 }

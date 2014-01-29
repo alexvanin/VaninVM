@@ -11,7 +11,7 @@
 
 long long cmp_int(long long* a, long long* b);
 double cmp_double(double* a, double* b);
-void run_intepreter(char* filename);
+int run_interpreter(char* filename);
 
 int main(int argc, char** argv)
 {
@@ -21,8 +21,9 @@ int main(int argc, char** argv)
 		printf("%s", "File is not specified");
 		return 1;
 	}
-	return_code = run_interpreter(argv[1]);
 
+	return_code = run_interpreter(argv[1]);
+	return return_code;
 }
 
 int run_interpreter(char* filename)
@@ -56,12 +57,13 @@ int run_interpreter(char* filename)
 	startfunc = read_bytecode(input, &phash_table);
 	fclose(input);
 
+	initTOS(3000);
 
-	initTOS();
 	initRStack(1000);
 	ip = 0;
 
 	current_context = create_context(startfunc, phash_table, &code);
+
 	node_last = NULL;
 
 	while (exec_status)
@@ -70,7 +72,7 @@ int run_interpreter(char* filename)
 		{
 		case INVALID:
 			//DO(INVALID, "Invalid instruction.", 1)
-			 break;
+			break;
 		case DLOAD:
 			//DO(DLOAD, "Load double on TOS, inlined into insn stream.", 9)
 			d1 = *((double*)(code+ip));
@@ -602,8 +604,7 @@ int run_interpreter(char* filename)
 			break;
 		}
 	}
-	remove_context(current_context);
-	getchar();
+	remove_context(current_context);	
 	return 0;
 }
 

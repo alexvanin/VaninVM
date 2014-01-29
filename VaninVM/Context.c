@@ -27,9 +27,12 @@ void push_context(context* cont)
 }
 context* pop_context()
 {
+	context* poped = node_last->obj;
 	c_node* last = node_last;
 	node_last = node_last->prev;
-	return last->obj;
+
+	free(last);
+	return poped;
 }
 
 //Find Context in Context Stack.

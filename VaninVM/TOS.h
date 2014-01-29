@@ -9,7 +9,7 @@ typedef union
 
 double* TOS;
 int tp;
-int initTOS();
+int initTOS(int);
 void push_int(long long);
 void push_double(double);
 long long pop_int();
