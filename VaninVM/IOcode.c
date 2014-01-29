@@ -2,7 +2,7 @@
 #include "CodeHeader.h"
 #include <string.h>
 
-int version = 0100;
+int version = 100;
 
 int read_bytecode(FILE* stream, func*** hash)
 {
