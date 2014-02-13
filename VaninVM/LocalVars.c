@@ -42,7 +42,7 @@ void args_to_local(context* cont, func** hash)
 {
 	int i;
 	long long tmp;
-	for (i=(hash[cont->id]->count_args)-1; i>=0; i--)
+	for (i=0; i<(hash[cont->id]->count_args); i++)
 	{
 		tmp = pop_int();
 		memmove(&((cont->locals)[i]), &tmp, sizeof(long long));
