@@ -134,15 +134,15 @@ int run_interpreter(char* filename)
 			//DO(DSUB, "Subtract 2 doubles on TOS (lower from upper), push value back.", 1)
 			d1 = pop_double();
 			d2 = pop_double();
-			d2 -= d1;
-			push_double(d2);
+			d1 -= d2;
+			push_double(d1);
 			break;
 		case ISUB:
 			//DO(ISUB, "Subtract 2 ints on TOS (lower from upper), push value back.", 1)
 			i1 = pop_int();
 			i2 = pop_int();
-			i2 -= i1;
-			push_int(i2);
+			i1 -= i2;
+			push_int(i1);
 			break;
 		case DMUL:
 			//DO(DMUL, "Multiply 2 doubles on TOS, push value back.", 1)
