@@ -1,0 +1,43 @@
+﻿<program> := <method>+
+
+<method> := method <type_method> <ident>(<param>* ) <block>
+
+<type> := int | double | string
+<type_method> := <type> | void
+
+<ident> := <char> <ident_rest>*
+<ident_rest> := <char> | <digit>
+<digit> := 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+<int> := <digit>+
+<double> := <int>.<int>
+<string> := " <char>? "
+
+<param> := <type> <ident>
+
+<block> := <call>;
+		| <ident> = <expr>;
+		| <type> <ident>;
+		| <type> <ident> = <expr>;
+		| if <condit> <block>
+		| if <condit> <block> else <block>
+		| while <condit> <block>
+		| do <block> until <condit>;
+
+<condit> := <int> <cond_op> <int>
+<cond_op> := < | > | == | <= | >=
+
+<expr> := <int>
+		| <double>
+		| <string>
+        | <int> <arith_op> <int>
+		| <double> <arith_op> <double>
+        | <ident>
+		| <call>
+
+<arith_op> := + | - | * | /
+
+
+
+
+
