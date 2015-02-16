@@ -140,33 +140,34 @@ namespace AssemblerVVM
     {
         static int Main(string[] args)
         {
+            /*
+             *  
+             */
             if (args.Length < 1)
             {
                 Console.WriteLine("No input files");
                 return 1;
             }
-            Dictionary<int, string> ConstID_VALUE = new Dictionary<int, string>();
+            Dictionary<int, string> ConstID_VALUE = new Dictionary<int, string>(); 
             Dictionary<string, int> ConstKEY_ID = new Dictionary<string, int>();
             Dictionary<string, int> CodeMARK_POS = new Dictionary<string, int>();
 
-            List<pair> FuncPos = new List<pair>();
+            List<pair> FuncPos = new List<pair>(); //This array defines first and last line of every procedure
 
-            string outname = args[0]+".vvm";
+            string outname = args[0].Replace(".vasm","")+".vvm";
             if (args.Length > 1)
                 outname = args[1];
             
+            int[] pos_d = new int[2] { 0, 0 }; //This array defines first and last line of data segment
+            string[] source = System.IO.File.ReadAllLines(args[0]); //Array of source code
 
-            int[] pos_d = new int[2] { 0, 0 };
-            string[] source = System.IO.File.ReadAllLines(args[0]);
             List<string> src = PositionAnalyse(source, ref pos_d, ref FuncPos, ref CodeMARK_POS);
-
-
-            using (var bw = new BinaryWriter(File.Open(outname, FileMode.OpenOrCreate)))
+            
+            using (var bw = new BinaryWriter(File.Open(outname, FileMode.OpenOrCreate))) //Writing into a file with bytecode
             {
-
-                HeaderAnalyse(src, pos_d, bw, ref ConstID_VALUE, ref ConstKEY_ID);
-                funcH_common FuncCommonH = new funcH_common(CRC16_alg("main"), FuncPos.Count);
-                bw.Write(FuncCommonH.Serialize());
+                HeaderAnalyse(src, pos_d, bw, ref ConstID_VALUE, ref ConstKEY_ID); 
+                funcH_common FuncCommonH = new funcH_common(CRC16_alg("main"), FuncPos.Count); //We define there that start procedure calls "main"
+                bw.Write(FuncCommonH.Serialize()); //We also define there number of procedures in our code
                 for (int i = 0; i < FuncPos.Count; i++)
                 {
                     FuncAnalyse(src, FuncPos[i], bw, ConstKEY_ID, CodeMARK_POS);
@@ -178,13 +179,22 @@ namespace AssemblerVVM
 
         static List<string> PositionAnalyse(string[] input, ref int[] posD, ref List<pair> posC, ref Dictionary<string, int> marks)
         {
+            /*
+             * This function fills arrays that define positions of functions and data in source text
+             * Return value - is an array of source text without comments, empty strings etc
+             * ---
+             * input - is an array of source text
+             * posD - is an array of start and end position of data segment
+             * posC - is an array of start and end position of every procedure
+             * marks - is an array of labes
+             */
             List<string> src = new List<string>();
             bool func_flag = false;
             int pos1 = 0, pos2 = 0, numline = 0;
             foreach (string s in input)
-                if (s != "")
+                if (s != "") //Skip empty strings
                 {
-                    if (func_flag == true && Regex.IsMatch(s, @"\w+:"))
+                    if (func_flag == true && Regex.IsMatch(s, @"\w+:")) //Labels cannot be outside of procedure
                     {
                         marks.Add(s.Trim(' ', '\t', ':'), numline);
                     }
@@ -192,12 +202,12 @@ namespace AssemblerVVM
                     {
                         src.Add(s.Trim(' ', '\t'));
 
-                        if (s.Contains(".data"))
+                        if (s.Contains(".data")) //Checking data segment
                             posD[0] = src.Count - 1;
                         if (s.Contains(".endd"))
                             posD[1] = src.Count - 1;
 
-                        if (s.Contains(".proc"))
+                        if (s.Contains(".proc")) //Checking procedure segment
                         {
                             numline = 0;
                             pos1 = src.Count - 1;
@@ -218,18 +228,29 @@ namespace AssemblerVVM
                 }
             return src;
         }
+
         static void HeaderAnalyse(List<string> src, int[] pos, BinaryWriter bw, ref Dictionary<int, string> id_v, ref Dictionary<string, int> k_id)
         {
-            str_header ConstH = new str_header();
-            string pattern = "\".*\"";
+            /*
+             * This function creates bytecode header. Header contains signature, version, text constants and their size
+             * ---
+             * src - clear source text
+             * pos - position of data segment in source text
+             * bw - writer to a file
+             * id_v, k_id - dictionaries for text constatns
+             */
+            str_header ConstH = new str_header(); //Object that stores all text consntants.            
+            string pattern = "\".*\""; //Pattern to take text constants (to delete)
+            string pattern_adv = "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""; //Advanced patternn
             int j = 1;
-            for (int i = pos[0] + 1; i < pos[1]; i++)
+            for (int i = pos[0] + 1; i < pos[1]; i++) //pos[0] = .data ; pos[0]+1 = first text const
             {
                 int position = src[i].IndexOf(" ");
                 string key = src[i].Substring(0, position);
-                string value = Regex.Match(src[i], pattern).ToString().Trim('"').Replace(@"\n", "\n").Replace(@"\r", "\r") + "\0";
-                id_v.Add(j, value); k_id.Add(key, j++);
-                ConstH.const_count++; ConstH.size_const += (value.Length);
+                string value = Regex.Match(src[i], pattern_adv).ToString();
+                value = value.Substring(1, value.Length-2).Replace(@"\n", "\n").Replace(@"\r", "\r").Replace("\\\"","\"") + "\0"; 
+                id_v.Add(j, value); k_id.Add(key, j++); //All contstants have their numeric equivalent, so we store both.
+                ConstH.const_count++; ConstH.size_const += (value.Length); //Defining total size of constants
             }
             bw.Write(ConstH.Serialize());
             for (int i = 1; i < j; i++)
@@ -237,32 +258,41 @@ namespace AssemblerVVM
                 bw.Write(Encoding.ASCII.GetBytes(id_v[i]));
             }
         }
+
         static void FuncAnalyse(List<string> code, pair pos, BinaryWriter bw, Dictionary<string, int> dictStr, Dictionary<string, int> dictJmp)
         {
+            /*
+             * This function writes an actual procedure in bytecode. 
+             * It will decode text-name of instructio into bytecode aswell as agruments for instruction
+             * ---
+             * code - clear source code
+             * pos - position of procedures
+             * dicStr - dictionary for text constants
+             * dictJmp - dictionary for every jump
+             */ 
             string name = "";
             MemoryStream str = new MemoryStream();
             funcH_signature sign = new funcH_signature();
             funcH_bytecode bc = new funcH_bytecode();
-
-
-            string[] current_str = code[pos.start].Split(' ');
+            
+            string[] current_str = code[pos.start].Split(' '); //Spliting string in case of arguments for instruction
             switch (current_str.Length)
             {
-                case 4:
+                case 4:  //2 arg instruction
                     bc.count_args = System.Convert.ToInt32(current_str[3]);
                     bc.count_locals = System.Convert.ToInt32(current_str[2]);
                     name = current_str[1];
                     break;
-                case 3:
+                case 3: //1 arg intruction
                     bc.count_locals = System.Convert.ToInt32(current_str[2]);
                     name = current_str[1];
                     break;
 
-                case 2:
-                    name = current_str[1];
+                case 2: //No arg
+                    name = current_str[1];  
                     break;
             }
-            bc.id = CRC16_alg(name);
+            bc.id = CRC16_alg(name); //Hash encode for function name 
             name += "\0";
             sign.size_signature = name.Length;
             using (BinaryWriter writer = new BinaryWriter(str))
@@ -289,7 +319,7 @@ namespace AssemblerVVM
                         writer.Write(CRC16_alg(current_str[1]));
                         writer.Write(ushort.Parse(current_str[2]));
                     }
-                    else if (jumps.Contains(current_opc))
+                    else if (jumps.Contains(current_opc)) //Pain in the arse
                         writer.Write(FindOffset(code, pos, j, ((ushort)dictJmp[current_str[1]]-j)));
                     j++;
                 }
@@ -297,7 +327,7 @@ namespace AssemblerVVM
 
             byte[] bcode = str.ToArray();
             sign.size_bytecode = bcode.Length;
-            sign.size_func = 22 + sign.size_bytecode + sign.size_signature;
+            sign.size_func = 22 + sign.size_bytecode + sign.size_signature; //Magic number 22 - size of meta-info for 
 
             bw.Write(sign.Serialize());
             bw.Write(Encoding.ASCII.GetBytes(name));
@@ -307,15 +337,18 @@ namespace AssemblerVVM
 
         public static short FindOffset(List<string> code, pair pos, int curr_pos, int off)
         {
+            /*
+             * This function calculating offset of bytes to jump a label. 
+             */
             short result = 0;
-            if (off > 0)
+            if (off > 0) //Jumping forward
             {
                 for (int i = curr_pos + 1; i < curr_pos + off; i++)
                 {
                     result += OpCodeSize((opcode)Enum.Parse(typeof(opcode), code[pos.start+i].Split(' ')[0].ToUpper()));
                 }
             }
-            else
+            else //Jumping backward
             {
                 for (int i = curr_pos; i >= curr_pos + off; i--)
                 {
@@ -341,6 +374,9 @@ namespace AssemblerVVM
 
         public static ushort CRC16_alg(string msg)
         {
+            /*
+             * HashFunction on Cyclic redundacy check algorythm
+             */
             byte[] text = Encoding.ASCII.GetBytes(msg);
             const ushort polinom = 0xa001;
             ushort code = 0xffff;
