@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,13 @@ namespace CompilerVVM
             }
             try
             {
+                /*
+                 * This program translate source code into assembly instructions
+                 * This can be done in several steps:
+                 *  1. Compiler finds tokens (individual parts such as text, spec. symbols, numbers etc);
+                 *  2. Compiler goes through tokens and defines functions
+                 *  3. Compiler parse every function into assembler instruction
+                  */
                 TokenScanner scanner = null;
                 ProcedureScanner procscanner = null;
                 Parser parser = null;
@@ -29,7 +37,9 @@ namespace CompilerVVM
                     parser = new Parser(scanner.Tokens, TextConst, procscanner.Methods);
                     
                     code = new CodeGen(TextConst, procscanner.Methods);
-                    ByteCode.GenerateByteCode(code.asm, args[0] + ".vvm");
+                    //ByteCode.GenerateByteCode(code.asm, args[0] + ".vvm");
+                    System.IO.File.WriteAllLines(args[0] + ".vasm", code.asm);
+
                     return;
                 }
             }
